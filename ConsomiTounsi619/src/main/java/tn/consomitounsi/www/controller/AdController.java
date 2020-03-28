@@ -65,12 +65,12 @@ public class AdController {
 		//get UserProductViews and UserProductCategoryViews
 		User user=iUserService.getUserByUsername(username).get();
 		UserProductViews UserProductViews= new UserProductViews();
-		if(!iUserProductViewsService.getUserViews(username,product).isPresent()) {
+		if(!iUserProductViewsService.getUserViews(user,product).isPresent()) {
 			UserProductViews.setProduct(product);
 			UserProductViews.setUser(user);
 		}
 		UserProductCategoryViews UserProductCategoryViews=new UserProductCategoryViews();
-		if (!iUserProductCategoryViewsService.getUserViews(username,product.getCategory()).isPresent()) {
+		if (!iUserProductCategoryViewsService.getUserViews(user,product.getCategory()).isPresent()) {
 			UserProductCategoryViews.setProductCategory(ad.getProduct().getCategory());
 			UserProductCategoryViews.setUser(user);
 		}

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tn.consomitounsi.www.entity.ProductCategory;
+import tn.consomitounsi.www.entity.User;
 import tn.consomitounsi.www.entity.UserProductCategoryViews;
 import tn.consomitounsi.www.repository.UserProductCategoryViewsRepository;
 
@@ -15,8 +16,8 @@ public class UserProductCategoryViewsServiceImpl implements IUserProductCategory
 	@Autowired
 	UserProductCategoryViewsRepository userProductCategoryViewsRepository;
 	@Override
-	public Optional <UserProductCategoryViews >getUserViews(String userName,ProductCategory category){
-		return userProductCategoryViewsRepository.getUserViews(userName, category);
+	public Optional <UserProductCategoryViews >getUserViews(User user,ProductCategory category){
+		return userProductCategoryViewsRepository.getUserViews(user, category);
 	}
 	@Override
 	public 	UserProductCategoryViews setUserViews(UserProductCategoryViews userProductCategoryViews){

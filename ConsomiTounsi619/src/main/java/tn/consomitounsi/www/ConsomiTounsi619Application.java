@@ -10,5 +10,5 @@ public class ConsomiTounsi619Application {
 	public static void main(String[] args) {
 		SpringApplication.run(ConsomiTounsi619Application.class, args);
 	}
-
+	
 }
