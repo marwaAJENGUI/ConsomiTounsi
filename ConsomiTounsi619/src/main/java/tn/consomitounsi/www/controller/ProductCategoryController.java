@@ -31,8 +31,7 @@ public class ProductCategoryController {
 	@ResponseBody
 	public ProductCategory addProductCategory(@RequestBody ProductCategory productCategory){
 		if (!iProductCategoryService.existsById(productCategory.getId())) {
-			iProductCategoryService.addProductCategory(productCategory);
-			return productCategory;
+			return iProductCategoryService.addProductCategory(productCategory);
 		}else {
 			throw new IllegalArgumentException("Product Category already exist");
 		}		

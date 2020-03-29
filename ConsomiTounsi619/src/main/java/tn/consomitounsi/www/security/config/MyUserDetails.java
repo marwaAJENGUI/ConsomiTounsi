@@ -24,6 +24,11 @@ public class MyUserDetails implements UserDetails {
         this.authorities = Arrays.stream(user.getRoles().split(","))
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
+        /* System.out.println(Arrays.stream(user.getRoles().split(","))
+        .map(SimpleGrantedAuthority::new).collect(Collectors.toList()).get(0));
+ 
+        System.out.println(this.toString());
+        */
         
     }
 
@@ -59,6 +64,12 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return active;
+        return true;
     }
+
+	@Override
+	public String toString() {
+		return "MyUserDetails [userName=" + userName + ", password=" + password + ", active=" + active
+				+ ", authorities=" + authorities + "]";
+	}
 }

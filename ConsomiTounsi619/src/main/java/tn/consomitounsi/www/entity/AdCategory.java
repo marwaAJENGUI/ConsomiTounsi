@@ -26,7 +26,6 @@ public class AdCategory implements Serializable {
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotNull
 	@Column(unique=true)
 	private String name;
 	@OneToMany(mappedBy="category")

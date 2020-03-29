@@ -25,8 +25,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
 
 	@Override
 	public ProductCategory addProductCategory(ProductCategory productCategory) {
-		productCategoryRepository.save(productCategory);
-		return productCategory;
+		return 		productCategoryRepository.save(productCategory);
 	}
 
 	@Override
@@ -50,18 +49,22 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
 	public boolean removeProductCategory(Long id) {
 				ProductCategory category=new ProductCategory();
 		if (productCategoryRepository.existsById(id)) {
-			List <ProductCategory> list=productCategoryRepository.findCategoryByName("No one");
-			if(list.size()==0) {
-				category.setName("No one");
-				category=productCategoryRepository.saveAndFlush(category);
-			} else category=list.get(0); 
-			List <Product> ads=productRepository.findProductsByCategory(id);
-			if (ads.size()>0) {
-				for (Product product:ads) {
-					product.setCategory(category);
-					productRepository.save(product);
-				}
+			if(productCategoryRepository.findById(id).get().getName().equals("No one")) return false;
+			category=productCategoryRepository.getOne(id);
+			if(category.getProducts().size()>0) {
+				List <ProductCategory> list=productCategoryRepository.findCategoryByName("No one");
+				if(list.size()==0) {
+					category.setName("No one");
+					category=productCategoryRepository.saveAndFlush(category);
+				} else {
+					category=list.get(0); 
+					List <Product> products=productRepository.findProductsByCategory(id);
+					for (Product product:products) {
+						product.setCategory(category);
+						productRepository.save(product);
+					}
 			}
+		}
 			productCategoryRepository.delete(productCategoryRepository.getOne(id));
 		}
 		return true;

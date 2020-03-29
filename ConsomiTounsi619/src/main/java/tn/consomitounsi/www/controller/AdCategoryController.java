@@ -31,8 +31,7 @@ public class AdCategoryController {
 	@PostMapping("/manage/addAdCategory")
 	@ResponseBody
 	public AdCategory addAdCategory(@RequestBody AdCategory adCategory){
-		iAdCategoryService.addAdCategory(adCategory);
-		return adCategory;
+		return 		iAdCategoryService.addAdCategory(adCategory);
 	}
 	
 	@GetMapping("/view/AdCategory/{id}")

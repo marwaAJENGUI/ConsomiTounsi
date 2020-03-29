@@ -3,6 +3,7 @@ package tn.consomitounsi.www.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,12 +29,14 @@ public class ProductController {
 	
 	@GetMapping("/view/Products")
 	@ResponseBody
+
 	public List<Product> getProducts() {
 		return iProductService.findAll();   
 	}
 	
 	@GetMapping("/view/Product/{barCode}")
 	@ResponseBody
+
     public Product getProduct(@PathVariable("barCode") Long barCode){
 		Product product = iProductService.getProductBybarCode(barCode);
 		return product;
@@ -79,12 +82,12 @@ public class ProductController {
     }
 	
 	ProductCategory validCategory(ProductCategory category) {
-		if (category==null) throw new IllegalArgumentException("Ad Category can not be empty");
+		if (category==null) throw new IllegalArgumentException("Product Category can not be empty");
 		if((category.getId()!=null)&&(iProductCategoryService.existsById(category.getId()))) {
 			return iProductCategoryService.getOne(category.getId());
 		}else if ((category.getName()!=null)&&(iProductCategoryService.findCategoryByName(category.getName()).size()>0)) {
 			return iProductCategoryService.findCategoryByName(category.getName()).get(0);			
-		}else throw new IllegalArgumentException("Invalid Ad Category, could not find reference");
+		}else throw new IllegalArgumentException("Invalid  Product Category, could not find reference");
 	}
 	
 }
