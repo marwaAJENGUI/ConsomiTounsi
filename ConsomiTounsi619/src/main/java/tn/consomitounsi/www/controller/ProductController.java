@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -39,9 +42,9 @@ import tn.consomitounsi.www.entity.ProductSearch;
 import tn.consomitounsi.www.service.IProductCategoryService;
 import tn.consomitounsi.www.service.IProductService;
 
-
 @RestController
 public class ProductController {
+	private static final String UPLOADED_FOLDER = "F:\\temp";
 	@Autowired
 	IProductService iProductService;
 	@Autowired
@@ -152,3 +155,5 @@ public class ProductController {
 	}
 	
 }
+
+
