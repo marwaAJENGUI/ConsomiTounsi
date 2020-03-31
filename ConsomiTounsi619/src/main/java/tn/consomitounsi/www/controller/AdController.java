@@ -1,5 +1,9 @@
 package tn.consomitounsi.www.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +56,10 @@ public class AdController {
 	@GetMapping("/view/ad/{id}")
 	@ResponseBody
     public Ad getAd(@PathVariable("id") Long id){
-		Ad ad = iAdService.getAdById(id);
+		Ad ad = iAdService.getAdById(id).get();
+		ad.setViews();
+		System.out.println(ad.getViews());
+		 ad=iAdService.saveAd(ad);
 		Product product=ad.getProduct();
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username;
@@ -64,40 +71,44 @@ public class AdController {
 		}
 		//get UserProductViews and UserProductCategoryViews
 		User user=iUserService.getUserByUsername(username).get();
-		UserProductViews UserProductViews= new UserProductViews();
+		UserProductViews userProductViews= new UserProductViews();
 		if(!iUserProductViewsService.getUserViews(user,product).isPresent()) {
-			UserProductViews.setProduct(product);
-			UserProductViews.setUser(user);
-		}
-		UserProductCategoryViews UserProductCategoryViews=new UserProductCategoryViews();
+			userProductViews.setProduct(product);
+			userProductViews.setUser(user);
+		} else userProductViews= iUserProductViewsService.getUserViews(user,product).get();
+		UserProductCategoryViews userProductCategoryViews=new UserProductCategoryViews();
 		if (!iUserProductCategoryViewsService.getUserViews(user,product.getCategory()).isPresent()) {
-			UserProductCategoryViews.setProductCategory(ad.getProduct().getCategory());
-			UserProductCategoryViews.setUser(user);
-		}
-		UserProductViews=iUserProductViewsService.setUserViews(UserProductViews);
-		UserProductCategoryViews=iUserProductCategoryViewsService.setUserViews(UserProductCategoryViews);
-		
-		product=iProductService.getOne(product.getBarCode());
-				return ad;
+			userProductCategoryViews.setProductCategory(product.getCategory());
+			userProductCategoryViews.setUser(user);
+		} else userProductCategoryViews= iUserProductCategoryViewsService.getUserViews(user,product.getCategory()).get();
+		userProductViews=iUserProductViewsService.setUserViews(userProductViews);
+		userProductCategoryViews=iUserProductCategoryViewsService.setUserViews(userProductCategoryViews);	
+			return iAdService.getAdById(id).get();
     }
 	
 	@PostMapping("/manage/addAd")
 	@ResponseBody
-	public Ad addAd(@RequestBody Ad ad)
-	{
+	public Ad addAd(@RequestBody Ad ad){
+		if(! isValidBegginningDateOnAdd( ad.getBeginningDate()))  
+			throw new IllegalArgumentException("Beginning Date can not be before more than 3 days than than today's date");
+		if (!isValidEndingDate(ad.getEndDate(), ad.getBeginningDate()))  
+			throw new IllegalArgumentException("Ending Date can not be before Beginning Date");
 		ad.setCategory(validCategory(ad.getCategory()));
 		ad.setProduct(validProduct(ad.getProduct()));
-		Ad a =iAdService.addAd(ad);
+		Ad a =iAdService.saveAd(ad);
 		return a;
 	}
 	
 	@PutMapping(value = "/manage/updateAd/{id}") 
 	@ResponseBody
 	public Ad updatead(@PathVariable("id") Long id,@RequestBody Ad ad) {
-		Ad a = iAdService.getAdById(id);
-		a.setBeginningDate(ad.getBeginningDate());
-		a.setCategory(ad.getCategory());
-		a.setEndDate(ad.getEndDate());
+		Ad a = iAdService.getAdById(id).get();
+		if (isValidBegginningDateOnUpdate(a.getBeginningDate(), ad.getBeginningDate())) {
+			a.setBeginningDate(ad.getBeginningDate());
+		}else throw new IllegalArgumentException("Beginning Date can not be before more than 3 days than the old value");
+		if (isValidEndingDate(ad.getEndDate(), ad.getBeginningDate())) {
+			a.setEndDate(ad.getEndDate());
+		}else throw new IllegalArgumentException("Ending Date can not be before Beginning Date");
 		Product product=validProduct(ad.getProduct());
 		a.setProduct(product);
 		a.setCategory(validCategory(ad.getCategory()));
@@ -111,6 +122,23 @@ public class AdController {
 		return iAdService.removeAd(id);
     }
 	
+	public static boolean isValidBegginningDateOnAdd(Date startingDate)  {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -3);
+		Date date = cal.getTime();             
+        return  startingDate.after(date);
+	}
+	public static boolean isValidBegginningDateOnUpdate(Date oldDate,Date newDate)  {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(oldDate);
+		cal.add(Calendar.DATE, -3);
+		Date date = cal.getTime();             
+        return  newDate.after(date);
+	}
+
+	public static boolean isValidEndingDate(Date endingDate, Date beginingDate) {
+        return ( endingDate.after(beginingDate)&& (new Date().after(endingDate)));
+	}
 	AdCategory validCategory(AdCategory category) {
 		if (category==null) throw new IllegalArgumentException("Ad Category can not be empty");
 		if((category.getId()!=null)&&(iAdCategoryService.existsById(category.getId()))) {

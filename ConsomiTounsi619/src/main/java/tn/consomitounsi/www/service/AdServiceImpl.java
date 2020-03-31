@@ -1,6 +1,7 @@
 package tn.consomitounsi.www.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,13 @@ public class AdServiceImpl implements IAdService{
 	}
 
 	@Override
-	public Ad getAdById(Long id) {
-		return adRepository.getOne(id);
+	public Optional<Ad> getAdById(Long id) {
+		return 		adRepository.findById(id);
 	}
 
 	@Override
-	public Ad addAd(Ad ad) {
-		adRepository.save(ad);
-		return ad;		
+	public Ad saveAd(Ad ad) {
+		return adRepository.save(ad);		
 	}
 	
 	@Override

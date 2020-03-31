@@ -37,17 +37,21 @@ public class AdCategoryServiceImpl implements IAdCategoryService{
 	public boolean removeAdCategory(Long id) {
 		AdCategory category=new AdCategory();
 		if (adCategoryRepository.existsById(id)) {
+			if(adCategoryRepository.findById(id).get().getName().equals("No one")) return false;
+			category=adCategoryRepository.getOne(id);
+			if(category.getAds().size()>0) {
 			List <AdCategory> list=adCategoryRepository.findCategoryByName("No one");
 			if(list.size()==0) {
 				category.setName("No one");
 				category=adCategoryRepository.saveAndFlush(category);
-			} else category=list.get(0); 
-			List <Ad> ads=adRepository.findAdsByCategory(id);
-			if (ads.size()>0) {
-				for (Ad ad:ads) {
-					ad.setCategory(category);
-					adRepository.save(ad);
-				}
+			} else {
+				category=list.get(0); 
+				List <Ad> ads=adRepository.findAdsByCategory(id);
+					for (Ad ad:ads) {
+						ad.setCategory(category);
+						adRepository.save(ad);
+					}
+			}
 			}
 			adCategoryRepository.delete(adCategoryRepository.getOne(id));
 		}

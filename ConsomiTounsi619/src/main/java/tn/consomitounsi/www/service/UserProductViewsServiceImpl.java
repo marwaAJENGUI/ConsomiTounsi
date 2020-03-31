@@ -22,7 +22,8 @@ public class UserProductViewsServiceImpl implements IUserProductViewsService {
 	}
 	@Override
 	public 	UserProductViews setUserViews(UserProductViews userProductViews){
+		userProductViews.setViews();
 		return userProductViewsRepository.saveAndFlush(userProductViews);
 		}
-		
+
 }

@@ -37,7 +37,7 @@ public class Ad implements Serializable {
 	private Date beginningDate;
 	@NotNull
 	@Temporal(TemporalType.DATE)
-	@Future(message="Please enter a future ending date ")
+	//@Future(message="Please enter a future ending date ")
 	private Date endDate;
 	private int targetViews=0;
 	private int views=0;
@@ -75,8 +75,8 @@ public class Ad implements Serializable {
 	public int getViews() {
 		return views;
 	}
-	public void setViews(int views) {
-		this.views = views;
+	public void setViews() {
+		this.views =this.views+1;
 	}
 	public Product getProduct() {
 		return product;
