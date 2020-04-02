@@ -27,7 +27,6 @@ public class UserController {
 	IUserService iUserService;
 	@GetMapping("/view/users")
 	@ResponseBody
-	@PreAuthorize("hasRole('ADMIN')")
 	public List<User> getUsers() {
 		return iUserService.findAll();   
 	}

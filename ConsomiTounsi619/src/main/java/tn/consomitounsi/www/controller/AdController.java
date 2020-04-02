@@ -71,11 +71,14 @@ public class AdController {
 		}
 		//get User
 		User user=iUserService.getUserByUsername(username).get();
+	
+		////////////////////Top 2 Ads for user
+		//Top 2 Products
 		List<Ad> list =iAdService.userProductAds(user);
 		if (list.size()>2)
 			list =iAdService.userProductAds(user).subList(0, 2);
 		else 		
-			if (list.size()==0) 
+			if (list.size()==0) //Top 2 Ads
 				if (iAdService.findAllByViews().size()>0) list=iAdService.findAllByViews().subList(0, 2);
 		 return list;
 	}
