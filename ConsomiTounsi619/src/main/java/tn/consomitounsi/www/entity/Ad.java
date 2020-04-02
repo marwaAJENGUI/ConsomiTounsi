@@ -3,6 +3,7 @@ package tn.consomitounsi.www.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -16,13 +17,15 @@ import javax.validation.constraints.Future;
 
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Columns;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(
 	    uniqueConstraints=
-	        @UniqueConstraint(columnNames={"beginningDate", "endDate","product_bar_code"})
+	        @UniqueConstraint(columnNames={"begenning_date", "end_date","product_bar_code"})
 	)
 public class Ad implements Serializable {
 	/**
@@ -34,9 +37,11 @@ public class Ad implements Serializable {
 	private Long id;
 	@NotNull
 	@Temporal(TemporalType.DATE)
+	@Column(name="begenning_date")
 	private Date beginningDate;
 	@NotNull
 	@Temporal(TemporalType.DATE)
+	@Column(name="end_date")
 	//@Future(message="Please enter a future ending date ")
 	private Date endDate;
 	private int targetViews=0;

@@ -1,6 +1,7 @@
 package tn.consomitounsi.www.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import tn.consomitounsi.www.entity.AdCategory;
 
@@ -10,7 +11,7 @@ public interface IAdCategoryService {
 
 	AdCategory addAdCategory(AdCategory adCategory);
 
-	AdCategory getAdCategoryById(Long id);
+	Optional<AdCategory> getAdCategoryById(Long id);
 
 	boolean removeAdCategory(Long id);
 

@@ -1,6 +1,7 @@
 package tn.consomitounsi.www.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,10 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
 	@Override
 	public ProductCategory findOneByName(String name) {
 		return productCategoryRepository.findOneByName(name).get(0);
+	}
+	@Override
+	public Optional <ProductCategory> findById(Long id){ 
+		return productCategoryRepository.findById(id);
 	}
 
 	@Override

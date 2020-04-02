@@ -34,12 +34,13 @@ public class Product implements Serializable{
 	private float price;
 	@ManyToOne
 	private ProductCategory category;
-	@OneToMany(mappedBy="product",cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy="product")
 	@JsonIgnore
 	private List <Ad> ads;
 	@OneToMany(mappedBy="product",cascade=CascadeType.REMOVE)
 	@JsonIgnore
 	private List <UserProductViews> productUsersViews;
+	
 
 	public Long getBarCode() {
 		return barCode;
@@ -80,16 +81,10 @@ public class Product implements Serializable{
 	public void setProductUsersViews(List<UserProductViews> productUsersViews) {
 		this.productUsersViews = productUsersViews;
 	}
+	
 	public Product() {
-		super();
 	}
-
-	@Override
-	public String toString() {
-		return "Product [barCode=" + barCode + ", name=" + name + ", price=" + price + ", category=" + category
-				+ ", ads=" + ads + ", productUsersViews=" + productUsersViews + "]";
-	}
-
+	
 	public Product(Long barCode, @NotNull(message = "product name is null") String name,
 			@NotNull @Positive(message = "The price should be positive number ") float price, ProductCategory category,
 			List<Ad> ads, List<UserProductViews> productUsersViews) {
@@ -102,6 +97,14 @@ public class Product implements Serializable{
 		this.productUsersViews = productUsersViews;
 	}
 	@Override
+	public String toString() {
+		return "Product [barCode=" + barCode + ", name=" + name + ", price=" + price + ", category=" + category
+				+ ", ads=" + ads + ", productUsersViews=" + productUsersViews ;
+	}
+	
+	
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -113,6 +116,7 @@ public class Product implements Serializable{
 		result = prime * result + ((productUsersViews == null) ? 0 : productUsersViews.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -151,7 +155,6 @@ public class Product implements Serializable{
 			return false;
 		return true;
 	}
-	
 	boolean isValidBarCode(Long code ) {
 		if((code.toString().indexOf("619")!=0)||(code.toString().length()!=13)) return false;
 		return true;

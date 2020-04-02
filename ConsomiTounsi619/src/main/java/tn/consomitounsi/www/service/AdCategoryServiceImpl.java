@@ -1,6 +1,7 @@
 package tn.consomitounsi.www.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class AdCategoryServiceImpl implements IAdCategoryService{
 	AdCategoryRepository adCategoryRepository;
 	@Autowired
 	AdRepository adRepository;
+
 	@Override
 	public List<AdCategory> findAll() {
 		return adCategoryRepository.findAll();
@@ -29,8 +31,8 @@ public class AdCategoryServiceImpl implements IAdCategoryService{
 	}
 
 	@Override
-	public AdCategory getAdCategoryById(Long id) {
-		return adCategoryRepository.getOne(id);
+	public Optional<AdCategory> getAdCategoryById(Long id) {
+		return adCategoryRepository.findById(id);
 	}
 
 	@Override
@@ -77,4 +79,6 @@ public class AdCategoryServiceImpl implements IAdCategoryService{
 		return adCategoryRepository.findCategoryByName(name);
 	}
 
+	
+	
 }

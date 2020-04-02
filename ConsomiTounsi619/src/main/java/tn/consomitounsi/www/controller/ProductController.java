@@ -13,6 +13,9 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,19 +41,30 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
+import tn.consomitounsi.www.entity.DBFile;
 import tn.consomitounsi.www.entity.Product;
 import tn.consomitounsi.www.entity.ProductCategory;
 import tn.consomitounsi.www.entity.ProductSearch;
+import tn.consomitounsi.www.service.DBFileStorageService;
 import tn.consomitounsi.www.service.IProductCategoryService;
 import tn.consomitounsi.www.service.IProductService;
 
+import org.clapper.util.misc.MIMETypeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @RestController
 public class ProductController {
-	private static final String UPLOADED_FOLDER = "F:\\temp";
+	private static final String UPLOADED_FOLDER = System.getProperty("user.dir");
+	Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	IProductService iProductService;
 	@Autowired
 	IProductCategoryService iProductCategoryService;
+	@Autowired
+    private DBFileStorageService dbFileStorageService;
 	
 	@GetMapping("/view/Products")
 	@ResponseBody
@@ -75,58 +91,90 @@ public class ProductController {
     }
 	@PostMapping("/manage/addProduct")
 	@ResponseBody
-	public Product addProduct(@RequestBody Product product,@RequestParam("file") MultipartFile file)
+	public Product addProduct(@RequestBody Product product
+			//,@RequestParam("file") MultipartFile file
+			)
 	{
 		if (!iProductService.existsById(product.getBarCode())) {
 			product.setCategory(validCategory(product.getCategory()));
 			iProductService.addProduct(product);
-			//upload image
-			if (!file.isEmpty()) {
-			        try {
-			            // Get the file and save it somewhere
-			            byte[] bytes = file.getBytes();
-			            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-			            Files.write(path, bytes);
-			            
-			            //get the barCode value from the image
-						InputStream barCodeInputStream;
-						try {
-							barCodeInputStream = new FileInputStream("C:\\Users\\Marwa\\Desktop\\milk_barcod1.jpg");
-							BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
-				
-							LuminanceSource source = new BufferedImageLuminanceSource(barCodeBufferedImage);
-							BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-							Reader reader = new MultiFormatReader();
-							Result result = reader.decode(bitmap);
-							System.out.println("Barcode text is :" + result.getText());
-
-						} catch (FileNotFoundException e) {
-							System.out.println("barCodeInputStream = new FileInputStream(file.)");
-							e.printStackTrace();
-						} catch (IOException e) {
-							//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
-							e.printStackTrace();
-						} catch (NotFoundException e) {
-							//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
-							e.printStackTrace();
-						} catch (ChecksumException e) {
-							//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
-							e.printStackTrace();
-						} catch (FormatException e) {
-							//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
-							e.printStackTrace();
-						}
-
-			        } catch (IOException e) {
-			           // byte[] bytes = file.getBytes();
-			            e.printStackTrace();
-			        }
-			    }
-						return product;
+			return product;
 		}else {
 			throw new IllegalArgumentException("Product already exist");
 		}
 	}
+
+	@RequestMapping(path = "/manage/addFile", method = RequestMethod.POST,
+		    consumes = {"multipart/form-data"})
+	public String addfile(@RequestParam("file") MultipartFile file) {
+		//upload image
+				if (!file.isEmpty()) {
+					        try {
+					            // Get the file and save it somewhere
+					            byte[] bytes = file.getBytes();
+					            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+					            Files.write(path, bytes);
+					            
+					            //get the barCode value from the image
+							InputStream barCodeInputStream;
+								try {
+									barCodeInputStream = new FileInputStream(UPLOADED_FOLDER + file.getOriginalFilename());
+									BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
+						
+									LuminanceSource source = new BufferedImageLuminanceSource(barCodeBufferedImage);
+									BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+									Reader reader = new MultiFormatReader();
+									Result result = reader.decode(bitmap);
+									System.out.println("Barcode text is :" + result.getText());
+									return result.getText();
+
+								} catch (FileNotFoundException e) {
+									System.out.println("barCodeInputStream = new FileInputStream(file.)");
+									e.printStackTrace();
+								} catch (IOException e) {
+									//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
+									e.printStackTrace();
+								} catch (NotFoundException e) {
+									//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
+									e.printStackTrace();
+								} catch (ChecksumException e) {
+									//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
+									e.printStackTrace();
+								} catch (FormatException e) {
+									//BufferedImage barCodeBufferedImage = ImageIO.read(barCodeInputStream);
+									e.printStackTrace();
+								}
+
+								} catch (IOException e) {
+					           // byte[] bytes = file.getBytes();
+					        	log.warn("Failed to upload attachment", e);
+					        }
+					    }
+				return "invalid file";
+	}
+	
+	 @PostMapping("/manage/upload/{fileName}")
+	    public String uploadMultipartFile(@RequestParam("file") MultipartFile file,@PathVariable("fileName") Long fileName) {
+		 	try {
+				 dbFileStorageService.storeFile(file, fileName);
+		        return "File uploaded successfully! -> filename = " + file.getOriginalFilename();
+		    } catch (  Exception e) {
+		     return "FAIL! Maybe You had uploaded the file before or the file's size > 500KB";
+		    }    
+	 }
+
+	 @GetMapping("/manage/load/{fileName}")
+	public ResponseEntity<byte[]> getFile(@PathVariable("fileName") Long fileName) {
+		 	    if(dbFileStorageService.getFile(fileName).isPresent()) {
+		 	      DBFile file = dbFileStorageService.getFile(fileName).get();
+		 	     return ResponseEntity.ok()
+		 	    	  .contentType(MediaType.parseMediaType(file.getFileType()))
+		 	          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+ file.getName()  +"."+MIMETypeUtil.fileExtensionForMIMEType(file.getFileType())+ "\"")
+		 	          .body(file.getData());  
+		 	    }
+		 	    
+		 	    return ResponseEntity.status(404).body(null);
+		 	  }
 	
 	@PutMapping(value = "/manage/updateProduct/{barCode}") 
 	@ResponseBody

@@ -1,6 +1,7 @@
 package tn.consomitounsi.www.controller;
 
 import java.util.List;
+import java.util.Locale.Category;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tn.consomitounsi.www.entity.AdCategory;
 import tn.consomitounsi.www.entity.ProductCategory;
 import tn.consomitounsi.www.service.IProductCategoryService;
 
@@ -30,11 +32,8 @@ public class ProductCategoryController {
 	@PostMapping("/manage/addProductCategory")
 	@ResponseBody
 	public ProductCategory addProductCategory(@RequestBody ProductCategory productCategory){
-		if (!iProductCategoryService.existsById(productCategory.getId())) {
 			return iProductCategoryService.addProductCategory(productCategory);
-		}else {
-			throw new IllegalArgumentException("Product Category already exist");
-		}		
+		
 	}
 	
 	@GetMapping("/view/ProductCategory/{id}")

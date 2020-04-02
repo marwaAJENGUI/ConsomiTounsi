@@ -2,6 +2,7 @@ package tn.consomitounsi.www.repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,5 +24,6 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     
     @Query("Select c from ProductCategory c where c.name=:name") 
 	List <ProductCategory> findCategoryByName(@Param("name")String name);
+	Optional <ProductCategory> findById(Long id);    
 
 }

@@ -3,6 +3,7 @@ package tn.consomitounsi.www.service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import tn.consomitounsi.www.entity.ProductCategory;
 
@@ -17,5 +18,6 @@ public interface IProductCategoryService {
 	boolean existsById(Long id);
 	ProductCategory getOne(Long id);
 	List<ProductCategory> findCategoryByName(String name);
+	Optional<ProductCategory> findById(Long id);
 
 }

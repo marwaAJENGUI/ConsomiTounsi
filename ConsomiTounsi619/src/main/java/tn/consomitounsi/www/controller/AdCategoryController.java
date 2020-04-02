@@ -37,8 +37,8 @@ public class AdCategoryController {
 	@GetMapping("/view/AdCategory/{id}")
 	@ResponseBody
     public AdCategory  getAdCategory(@PathVariable("id") Long id){
-		
-		return iAdCategoryService.getAdCategoryById(id);
+		AdCategory category= iAdCategoryService.getAdCategoryById(id).get();
+		return category;
     }
 	
 	@DeleteMapping("/manage/removeAdCategory/{id}")

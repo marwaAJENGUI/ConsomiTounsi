@@ -26,8 +26,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
     }
-/*
-	@Override
+
+/*	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // Set your configuration on the auth object
         auth.inMemoryAuthentication()
@@ -47,6 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
 	        	.antMatchers("/manage/**").hasRole("ADMIN")
 		        .antMatchers("/view/**").hasAnyRole("ADMIN", "USER")
+        		.anyRequest().permitAll()
 		    .and()
 		    .httpBasic();
     }

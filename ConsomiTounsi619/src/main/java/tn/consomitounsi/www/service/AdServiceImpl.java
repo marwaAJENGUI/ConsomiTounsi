@@ -1,5 +1,6 @@
 package tn.consomitounsi.www.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tn.consomitounsi.www.entity.Ad;
+import tn.consomitounsi.www.entity.ProductCategory;
+import tn.consomitounsi.www.entity.User;
 import tn.consomitounsi.www.repository.AdCategoryRepository;
 import tn.consomitounsi.www.repository.AdRepository;
 import tn.consomitounsi.www.repository.ProductRepository;
@@ -37,8 +40,8 @@ public class AdServiceImpl implements IAdService{
 	
 	@Override
 	public Ad updateAdById(Ad ad, Long id) {
-		adRepository.save(ad);
-		return ad; 
+		adRepository.flush();
+		return adRepository.findById(id).get(); 
 	}
 	
 	@Override
@@ -46,5 +49,21 @@ public class AdServiceImpl implements IAdService{
 		adRepository.delete(adRepository.getOne(id));
 		return true;
 	}
+	@Override
+	public List<Ad> userProductAds(User user){
+		Date today=new Date();
+		return adRepository.findUserAds(user, today);
+	}
+	@Override
+	public List<Ad> findAllByViews(){
+		Date today=new Date();
+		return adRepository.findAllByViews(today);
+	}
+	@Override
+	public List<Ad> findByProductCategory(ProductCategory category){
+	Date today=new Date();
+	return adRepository.findAdsByProductCategory(category,today);
+	}
+	
 
 }
